@@ -23,7 +23,11 @@ def attention_loss(logits, label, beta=4, gamma=0.5, name='attention_loss'):
     
     p = tf.nn.sigmoid(logits)
     
-    cost = pos_weight * y * sigma * tf.pow(beta,tf.pow(1 - p, gamma)) + (1 - y) * (logits + sigma) * tf.pow(beta,tf.pow(p, gamma))
+    eps = 1e-14
+    
+    p_clip = tf.clip_by_value(p, eps, 1.0-eps)
+
+    cost = pos_weight * y * sigma * tf.pow(beta,tf.pow(1 - p_clip, gamma)) + (1 - y) * (logits + sigma) * tf.pow(beta,tf.pow(p_clip, gamma))
    
     cost = tf.reduce_mean(cost)
 
